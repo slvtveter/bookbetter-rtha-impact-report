@@ -23,17 +23,21 @@ contribution is the product, and the page shows it works (three in four travelle
 it, opt-out falls month over month). Every claim is traceable to one dataset and one script, and
 every assumption is printed on the page itself, because an airport will be asked where the numbers come from.
 
-## What's on the page
+## How the page reads
+
+The page is built to be understood in 30 seconds, top to bottom:
 
 | Block | What it answers for the airport |
 |---|---|
-| Hero: **CO₂e avoided through SAF** | The headline sustainability figure, plus its share of total emissions so it can't be over-read |
-| Six KPI tiles | Bookings & passengers, SAF uptake (with July→October change), SAF litres & traveller contributions, gross booking value & partner revenue share, repeat bookings, certificates issued |
-| Bookings per month, with / without SAF | Volume seasonality and whether uptake holds after the launch effect |
-| What travellers did with the 10 % default | Kept / increased / reduced / switched off — the behavioural proof that the default works |
-| CO₂e avoided by route | Where the tonnes come from; long leisure routes dominate, London City is busy but short |
-| Funnel: sessions → searches → bookings → bookings with SAF | Engine conversion plus the SAF step, with device split in the footnote |
-| What this means for RTHA · Proposed next quarter | Three takeaways and three concrete, testable next steps |
+| **Headline sentence** | What this is and the result, in one line: litres of SAF funded and tonnes of CO₂e avoided |
+| **Three pillars** — Sustainability · Commercial · Adoption | One big number each (215 t CO₂e, €1.74M booked, 75% kept SAF on) with two supporting figures below |
+| **Uptake by month** (stacked columns) | Did the pre-selected contribution keep working after the launch effect? Share with SAF under every month |
+| **What travellers did with the 10 % default** (segmented bar) | Kept / increased / reduced / switched off — the behavioural proof that the default works, plus the opt-out trend |
+| **CO₂e avoided by route** (ranked bars) | Where the tonnes come from; Iberian leisure routes dominate, London City is busy but short |
+| **Proposed for next quarter** | Three concrete, testable next steps |
+| **Method footer** | Every assumption on the page itself, and a pointer to the code |
+
+The booking-engine funnel (sessions → searches → bookings → bookings with SAF) and the device split are in the notebook; on the page they are reduced to the conversion rate in the Commercial pillar, because they are BookBetter's KPIs more than the airport's.
 
 ## Headline figures (synthetic, 1 July – 31 October 2026)
 
@@ -92,11 +96,13 @@ device, customer id, gross value, CO₂e, SAF choice (`kept_default` / `increase
 
 ## Design notes
 
-- **One number leads.** Hero figure, then tiles, then charts, then actions — the page reads top to bottom in 30 seconds.
-- **No dual axes, no pies.** Bookings and uptake share one chart as stacked columns with the share labelled under each month; the part-to-whole split is a segmented bar, not a donut.
-- **Colour means one thing.** Blue = SAF / with contribution, grey = without, an ordinal blue ramp for ordered parts and funnel stages. Text never wears the data colour.
+- **One sentence first.** The headline states the result; the reader knows what the page is before reading a single number.
+- **Three numbers, not twelve.** Each pillar leads with one hero figure; everything else is secondary text under it.
+- **Charts titled by their insight**, not by their axis names ("The pre-selected 10 % does the work", not "SAF choice distribution").
+- **No dual axes, no pies, no card borders.** Sections are separated by whitespace and hairlines; the only tinted surface is the action block at the bottom.
+- **Colour means one thing.** Blue = SAF / with contribution, grey = without, an ordinal blue ramp for the ordered parts of the segmented bar. Text never wears the data colour.
 - **Honest marks.** Thin bars, rounded data-end only, hairline grid, 2 px gaps between stacked segments, labels only where they fit; every bar carries a hover tooltip in the HTML version.
-- **Print-first.** A4 portrait, single page, exported with headless Chrome; the HTML also reflows to a single column on phones.
+- **Print-first.** A4 portrait, single page, Manrope, exported with headless Chrome; the HTML reflows to one column on phones.
 
 ## Repository layout
 

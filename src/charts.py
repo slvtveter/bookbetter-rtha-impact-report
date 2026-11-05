@@ -21,19 +21,13 @@ BASELINE = "#c3c2b7"
 BLUE = "#2a78d6"
 BLUE_RAMP = ["#1c5cab", "#2a78d6", "#5598e7", "#86b6ef"]  # ordinal, dark -> light
 GRAY_FILL = "#d3d2cb"                                      # de-emphasis / "no SAF"
-FONT = "font-family='system-ui, -apple-system, Segoe UI, sans-serif'"
+FONT = "font-family='Manrope, system-ui, -apple-system, Segoe UI, sans-serif'"
 
 
 def fmt_int(n: float) -> str:
     return f"{int(round(n)):,}"
 
 
-def fmt_compact(n: float) -> str:
-    if n >= 1_000_000:
-        return f"{n / 1_000_000:.1f}M"
-    if n >= 10_000:
-        return f"{n / 1000:.0f}K"
-    return fmt_int(n)
 
 
 def _nice_ceiling(v: float, steps: int = 3) -> tuple[float, float]:
@@ -100,7 +94,7 @@ def stacked_columns(monthly: list[dict], width=324, height=166) -> str:
     lx = pad_l
     out.append(f"<rect x='{lx}' y='4' width='10' height='10' rx='2' fill='{BLUE}'/>")
     out.append(_text(lx + 14, 13, "With SAF contribution", 10, INK_2))
-    lx2 = lx + 138
+    lx2 = lx + 150
     out.append(f"<rect x='{lx2}' y='4' width='10' height='10' rx='2' fill='{GRAY_FILL}'/>")
     out.append(_text(lx2 + 14, 13, "Without", 10, INK_2))
 
@@ -128,7 +122,7 @@ def stacked_columns(monthly: list[dict], width=324, height=166) -> str:
 # ---------------------------------------------------------------------------------
 # 2. Tall segmented bar: what travellers did with the 10 % default
 # ---------------------------------------------------------------------------------
-def segmented_bar(choices: list[dict], width=324, bar_h=28) -> str:
+def segmented_bar(choices: list[dict], width=324, bar_h=32) -> str:
     fills = {
         "increased": BLUE_RAMP[0],
         "kept_default": BLUE_RAMP[1],
@@ -155,7 +149,7 @@ def segmented_bar(choices: list[dict], width=324, bar_h=28) -> str:
     lx, ly = 0, bar_h + 22
     for i, c in enumerate(choices):
         col, row = i % 2, i // 2
-        px = lx + col * 162
+        px = lx + col * (width // 2)
         py = ly + row * 18
         out.append(f"<rect x='{px}' y='{py - 9}' width='10' height='10' rx='2' fill='{fills[c['key']]}'/>")
         out.append(_text(px + 14, py, c["label"], 10, INK_2))
@@ -183,29 +177,5 @@ def ranked_bars(routes: list[dict], width=324, max_rows=8, row_h=20, bar_h=13) -
         out.append(f"<path d='{_rounded_right_rect(base_x, y + (row_h - bar_h) / 2, w, bar_h)}' fill='{fill}'><title>{escape(tip)}</title></path>")
         out.append(_text(base_x - 8, y + row_h / 2 + 4, r["destination"], 10.5, INK_2, "end"))
         out.append(_text(base_x + w + 6, y + row_h / 2 + 4, f"{r['co2e_avoided_t']:.1f} t", 10, INK, "start", 600))
-    out.append("</svg>")
-    return "".join(out)
-
-
-# ---------------------------------------------------------------------------------
-# 4. Funnel: ordinal horizontal bars, sessions -> bookings with SAF
-# ---------------------------------------------------------------------------------
-def funnel(stages: list[dict], width=324, row_h=36, bar_h=13) -> str:
-    val_w = 58
-    plot_w = width - val_w
-    vmax = stages[0]["value"]
-    height = row_h * len(stages) - 6
-    out = [f"<svg viewBox='0 0 {width} {height}' width='{width}' height='{height}' role='img' aria-label='Booking funnel'>"]
-    for i, s in enumerate(stages):
-        y = i * row_h
-        w = max(plot_w * s["value"] / vmax, 4)
-        fill = BLUE_RAMP[i]
-        out.append(_text(0, y + 11, s["stage"], 10.5, INK_2, "start", 500))
-        if i > 0:
-            ratio = s["value"] / stages[i - 1]["value"] * 100
-            conv = f"{ratio:.0f}% of previous step" if ratio >= 10 else f"{ratio:.1f}% of previous step"
-            out.append(_text(width, y + 11, conv, 9.5, MUTED, "end"))
-        out.append(f"<path d='{_rounded_right_rect(0, y + 16, w, bar_h)}' fill='{fill}'><title>{escape(s['stage'])}: {fmt_int(s['value'])}</title></path>")
-        out.append(_text(w + 6, y + 16 + bar_h / 2 + 4, fmt_int(s["value"]), 10.5, INK, "start", 600))
     out.append("</svg>")
     return "".join(out)

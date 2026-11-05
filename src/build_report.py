@@ -50,27 +50,27 @@ def render(kpis: dict) -> str:
     b = pd.read_csv(ROOT / "data" / "bookings.csv", parse_dates=["booking_date"])
     off_by_month = (b.assign(month=b["booking_date"].dt.strftime("%Y-%m"))
                     .groupby("month")["saf_choice"].apply(lambda s: (s == "switched_off").mean() * 100))
-    m_first = {"off_pct": float(off_by_month.iloc[0])}
-    m_last = {"off_pct": float(off_by_month.iloc[-1])}
+    m_first = {"off_pct": float(off_by_month.iloc[0]), "uptake": monthly[0]["uptake_pct"]}
+    m_last = {"off_pct": float(off_by_month.iloc[-1]), "uptake": monthly[-1]["uptake_pct"]}
 
     routes = kpis["routes"]
-    other_routes = {"t": sum(r["co2e_avoided_t"] for r in routes[8:]), "n": len(routes[8:])}
     lcy = next(r for r in routes if r["destination"] == "London City")
+    iberia = {"Barcelona", "Alicante", "Faro", "Malaga", "Lisbon"}
+    iberia_share = sum(r["co2e_avoided_t"] for r in routes if r["destination"] in iberia) / kpis["totals"]["co2e_avoided_t"] * 100
 
     return tpl.render(
         period=kpis["period"],
-        other_routes=other_routes,
         lcy=lcy,
+        iberia_share=iberia_share,
         t=kpis["totals"],
         dev=kpis["uptake_by_device_pct"],
         m_first=m_first,
         m_last=m_last,
         c_off=choices["switched_off"],
         kept_or_more=choices["kept_default"]["share_pct"] + choices["increased"]["share_pct"],
-        chart_monthly=charts.stacked_columns(monthly),
-        chart_choices=charts.segmented_bar(kpis["choices"]),
-        chart_routes=charts.ranked_bars(kpis["routes"]),
-        chart_funnel=charts.funnel(kpis["funnel"]),
+        chart_monthly=charts.stacked_columns(monthly, width=337, height=156),
+        chart_choices=charts.segmented_bar(kpis["choices"], width=337),
+        chart_routes=charts.ranked_bars(kpis["routes"], width=400, row_h=18, bar_h=12),
     )
 
 
