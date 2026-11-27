@@ -17,6 +17,11 @@ BUILD = ROOT / "build"
 
 PARTNER_REVENUE_SHARE = 0.025  # illustrative share of gross booking value paid to RTHA
 
+# Baseline assumptions (invented, same status as the rest of the data).
+# They answer "compared to what?" for the two headline claims.
+BASELINE_OPT_IN_UPTAKE_PCT = 5.0   # share of bookings that would add SAF if it were an unticked checkbox
+PRIOR_YEAR_BOOKINGS = 3000         # bookings through RTHA's previous booking flow, 1 Jul - 31 Oct 2025
+
 CHOICE_LABELS = {
     "increased": "Increased above 10 %",
     "kept_default": "Kept the 10 % default",
@@ -56,6 +61,18 @@ def compute(bookings: pd.DataFrame, traffic: pd.DataFrame) -> dict:
     totals["co2e_avoided_share_pct"] = totals["co2e_avoided_t"] / totals["co2e_total_t"] * 100
     repeat_mask = b.duplicated("customer_id", keep="first")
     totals["repeat_booking_share_pct"] = float(repeat_mask.mean() * 100)
+
+    # --- baseline --------------------------------------------------------------
+    # Opt-in counterfactual: same average coverage per SAF booking, but only 5 % of bookings take it.
+    opt_in_avoided_t = totals["co2e_avoided_t"] * BASELINE_OPT_IN_UPTAKE_PCT / totals["saf_uptake_pct"]
+    baseline = {
+        "opt_in_uptake_pct": BASELINE_OPT_IN_UPTAKE_PCT,
+        "opt_in_co2e_avoided_t": opt_in_avoided_t,
+        "default_effect_t": totals["co2e_avoided_t"] - opt_in_avoided_t,
+        "default_multiple": totals["co2e_avoided_t"] / opt_in_avoided_t,
+        "prior_year_bookings": PRIOR_YEAR_BOOKINGS,
+        "bookings_growth_pct": (totals["bookings"] / PRIOR_YEAR_BOOKINGS - 1) * 100,
+    }
 
     # --- monthly ------------------------------------------------------------------
     monthly = (
@@ -141,6 +158,7 @@ def compute(bookings: pd.DataFrame, traffic: pd.DataFrame) -> dict:
     return {
         "period": {"start": "2026-07-01", "end": "2026-10-31", "label": "1 July – 31 October 2026"},
         "totals": totals,
+        "baseline": baseline,
         "monthly": monthly_out,
         "choices": choices,
         "routes": routes_out,
@@ -158,6 +176,8 @@ def main() -> dict:
     print(f"Bookings {t['bookings']:,} | passengers {t['passengers']:,} | GBV €{t['gross_booking_value_eur']:,.0f}")
     print(f"SAF uptake {t['saf_uptake_pct']:.1f}% ({t['uptake_change_pp']:+.1f} pp Jul→Oct) | SAF {t['saf_litres']:,.0f} L | €{t['saf_contributions_eur']:,.0f}")
     print(f"CO2e avoided {t['co2e_avoided_t']:.1f} t of {t['co2e_total_t']:.0f} t ({t['co2e_avoided_share_pct']:.1f}%)")
+    bl = kpis["baseline"]
+    print(f"Baseline: opt-in would avoid {bl['opt_in_co2e_avoided_t']:.1f} t ({bl['default_multiple']:.0f}x less) | bookings {bl['bookings_growth_pct']:+.0f}% vs prior year")
     print(f"Repeat bookings {t['repeat_booking_share_pct']:.1f}% | certificates {t['certificates_issued']:,} | conv {t['session_to_booking_pct']:.2f}%")
     return kpis
 

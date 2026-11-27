@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BookBetter × RTHA — Partnership Impact Report</title>
+<title>BookBetter × RTHA: Partnership Impact Report</title>
 <meta name="description" content="One-page impact report for the BookBetter × Rotterdam The Hague Airport booking partnership, July–October 2026 (illustrative data).">
-<meta property="og:title" content="BookBetter × RTHA — Partnership Impact Report">
+<meta property="og:title" content="BookBetter × RTHA: Partnership Impact Report">
 <meta property="og:description" content="Commercial and sustainability impact of the RTHA booking engine in its first four months (synthetic data, case study).">
 <meta property="og:image" content="https://slvtveter.github.io/bookbetter-rtha-impact-report/report.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +72,7 @@
   .meta b { color: var(--ink); font-weight: 600; }
 
   /* --- 2. Three pillars ---------------------------------------------------- */
-  .pillars { display: grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ink); }
+  .pillars { display: grid; grid-template-columns: 1fr 1.2fr 1fr; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ink); }
   .pillar { padding-right: 24px; }
   .pillar + .pillar { border-left: 1px solid var(--hairline); padding-left: 24px; }
   .pillar .kind { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
@@ -124,19 +124,21 @@
     <div class="pillar">
       <div class="kind">Sustainability</div>
       <div class="big">{{ t.co2e_avoided_t | round0 }}<small>t CO₂e</small></div>
-      <div class="what">avoided — {{ t.co2e_avoided_share_pct | round1 }}% of what these flights emitted</div>
+      <div class="what">avoided, {{ t.co2e_avoided_share_pct | round1 }}% of what these flights emitted</div>
       <ul class="sub">
-        <li><b>{{ t.saf_litres | int_ }} L</b> of SAF via Book &amp; Claim</li>
-        <li><b>{{ t.certificates_issued | int_ }}</b> SAF certificates issued</li>
+        <li><b>{{ t.saf_litres | int_ }} L</b> SAF via Book &amp; Claim</li>
+        <li>vs <b>{{ bl.opt_in_co2e_avoided_t | round0 }} t</b> with an opt-in checkbox</li>
+        <li><b>{{ t.certificates_issued | int_ }}</b> certificates issued</li>
       </ul>
     </div>
     <div class="pillar">
       <div class="kind">Commercial</div>
       <div class="big">€{{ t.gross_booking_value_eur | eur_m }}</div>
-      <div class="what">booked — {{ t.bookings | int_ }} bookings, {{ t.passengers | int_ }} passengers</div>
+      <div class="what">booked across {{ t.bookings | int_ }} bookings, {{ t.passengers | int_ }} travellers</div>
       <ul class="sub">
+        <li><span class="up">▲ {{ bl.bookings_growth_pct | round0 }}%</span> vs Jul–Oct 2025</li>
         <li><b>€{{ t.partner_revenue_share_eur | int_ }}</b> revenue share to RTHA</li>
-        <li><b>{{ t.session_to_booking_pct | round2 }}%</b> session-to-booking, <b>{{ t.repeat_booking_share_pct | round1 }}%</b> repeat</li>
+        <li><b>{{ t.session_to_booking_pct | round2 }}%</b> conversion, <b>{{ t.repeat_booking_share_pct | round1 }}%</b> repeat</li>
       </ul>
     </div>
     <div class="pillar">
@@ -144,8 +146,9 @@
       <div class="big">{{ t.saf_uptake_pct | round0 }}%</div>
       <div class="what">of bookings include a SAF contribution</div>
       <ul class="sub">
-        <li><span class="up">▲ {{ t.uptake_change_pp | round1 }} pp</span> from July to October</li>
-        <li><b>€{{ t.saf_contributions_eur | int_ }}</b> contributed by travellers</li>
+        <li><span class="up">▲</span> {{ m_first.uptake | round0 }}% in July, {{ m_last.uptake | round0 }}% in October</li>
+        <li>vs <b>{{ bl.opt_in_uptake_pct | round0 }}%</b> for an opt-in checkbox</li>
+        <li><b>€{{ t.saf_contributions_eur | int_ }}</b> paid by travellers</li>
       </ul>
     </div>
   </section>
@@ -153,14 +156,14 @@
   <section class="charts" aria-label="Evidence">
     <div class="chart">
       <h2>Uptake held through the summer peak and rose in autumn</h2>
-      <p class="lead">Bookings through the RTHA engine, split by whether a SAF contribution was included: {{ m_first.uptake | round0 }}% in July, {{ m_last.uptake | round0 }}% in October.</p>
+      <p class="lead">Bookings through the RTHA engine, split by whether a SAF contribution was included.</p>
       {{ chart_monthly }}
     </div>
     <div class="chart">
       <h2>The pre-selected 10&nbsp;% does the work: {{ kept_or_more | round0 }}% kept or raised it</h2>
-      <p class="lead">What travellers did with the default contribution. Opt-out fell from {{ m_first.off_pct | round0 }}% in July to {{ m_last.off_pct | round0 }}% in October.</p>
+      <p class="lead">What travellers did with the default. Opt-out fell from {{ m_first.off_pct | round0 }}% in July to {{ m_last.off_pct | round0 }}% in October.</p>
       {{ chart_choices }}
-      <p class="lead" style="margin-top:12px">Where SAF was kept on, travellers covered <b>{{ t.avg_coverage_pct_when_on | round1 }}%</b> of their emissions on average. Uptake was identical on mobile and desktop (<b>{{ dev.mobile | round0 }}%</b>), so the default, not the device, drives it. Average contribution where kept on: <b>€{{ t.avg_contribution_eur_when_on | round0 }}</b> per booking.</p>
+      <p class="lead" style="margin-top:12px">Travellers with SAF on covered <b>{{ t.avg_coverage_pct_when_on | round1 }}%</b> of their emissions on average, about <b>€{{ t.avg_contribution_eur_when_on | round0 }}</b> per booking. Uptake is the same on mobile and desktop (<b>{{ dev.mobile | round0 }}%</b>), so the default, not the device, is what drives it.</p>
     </div>
   </section>
 
@@ -171,20 +174,20 @@
       {{ chart_routes }}
     </div>
     <div class="aside">
-      <p><b>Five Iberian routes</b> — Barcelona, Alicante, Faro, Málaga, Lisbon — account for <b>{{ iberia_share | round0 }}%</b> of all CO₂e avoided.</p>
-      <p><b>London City</b> is a top-4 route by volume ({{ lcy.bookings | int_ }} bookings) but, at 320 km, avoids only <b>{{ lcy.co2e_avoided_t | round1 }} t</b>: short routes are where a rail option matters.</p>
+      <p><b>Five Iberian routes</b> (Barcelona, Alicante, Faro, Málaga, Lisbon) account for <b>{{ iberia_share | round0 }}%</b> of all CO₂e avoided.</p>
+      <p><b>London City</b> is a top-4 route by volume ({{ lcy.bookings | int_ }} bookings) but at 320 km it avoids only <b>{{ lcy.co2e_avoided_t | round1 }} t</b>. On short routes a rail option matters more.</p>
     </div>
   </section>
 
   <section class="next" aria-label="Proposed next quarter">
     <div class="head">Proposed for next quarter</div>
-    <div class="step"><div class="n">01</div><h3>Test a 15&nbsp;% default</h3><p>A/B test on the five Iberian routes, where uptake is highest; track conversion and opt-out.</p></div>
-    <div class="step"><div class="n">02</div><h3>Make certificates shareable</h3><p>{{ t.certificates_issued | int_ }} issued so far: a “my flight ran on SAF” moment for travellers and RTHA’s channels.</p></div>
-    <div class="step"><div class="n">03</div><h3>Show rail next to London City</h3><p>The shortest route avoids the least CO₂e; a rail option keeps the sustainable choice honest.</p></div>
+    <div class="step"><div class="n">01</div><h3>Test a 15&nbsp;% default</h3><p>A/B test on the five Iberian routes, where the most CO₂e is avoided. Track conversion and opt-out.</p></div>
+    <div class="step"><div class="n">02</div><h3>Make certificates shareable</h3><p>{{ t.certificates_issued | int_ }} issued so far. A “my flight ran on SAF” moment travellers can share and RTHA can reuse.</p></div>
+    <div class="step"><div class="n">03</div><h3>Show rail next to London City</h3><p>It is the shortest route and avoids the least CO₂e, so a rail option is the more honest green choice.</p></div>
   </section>
 
   <footer>
-    <p><b>Method.</b> All figures come from a synthetic dataset of {{ t.bookings | int_ }} bookings built for this case study, not from real RTHA or BookBetter data. Emissions 0.12–0.17 kg CO₂e per passenger-km by distance; SAF via Book &amp; Claim, 2.0 kg CO₂e avoided per litre (~80% lifecycle reduction), travellers pay the €2.00/L price gap; 2.5% revenue share is illustrative. Code and data: github.com/slvtveter/bookbetter-rtha-impact-report</p>
+    <p><b>Method.</b> All figures come from a synthetic dataset of {{ t.bookings | int_ }} bookings made for this case study, not from real RTHA or BookBetter data. Emissions: 0.12–0.17 kg CO₂e per passenger-km, depending on distance. SAF via Book &amp; Claim: 2.0 kg CO₂e avoided per litre (about 80% lifecycle reduction), traveller pays the €2.00/L price gap. Assumed, not measured: 2.5% revenue share, {{ bl.prior_year_bookings | int_ }} bookings in the same months of 2025, {{ bl.opt_in_uptake_pct | round0 }}% uptake for an opt-in checkbox. Code and data: github.com/slvtveter/bookbetter-rtha-impact-report</p>
   </footer>
 </main>
 </body>

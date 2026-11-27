@@ -63,6 +63,7 @@ def render(kpis: dict) -> str:
         lcy=lcy,
         iberia_share=iberia_share,
         t=kpis["totals"],
+        bl=kpis["baseline"],
         dev=kpis["uptake_by_device_pct"],
         m_first=m_first,
         m_last=m_last,
